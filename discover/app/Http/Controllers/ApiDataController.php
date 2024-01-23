@@ -33,23 +33,30 @@ class ApiDataController extends Controller
     // }
 
 
-    public function DataView($category)
-    {
-        $api_data = DB::table('api_data')->where('category', $category)->get();
-    
-        if ($api_data->isEmpty()) {
-            $response = [
-                "status" => false,
-                "message" => "data not found"
-            ];
-    
-            return response()->json($response);
-        }
-    
-        $data = json_encode($api_data);
-    
-        return response()->json($api_data);
+    public function DataView($category = null)
+{
+    $query = DB::table('api_data');
+
+    if ($category !== null) {
+        $query->where('category', $category);
     }
+
+    $api_data = $query->get();
+
+    if ($api_data->isEmpty()) {
+        $response = [
+            "status" => false,
+            "message" => "data not found"
+        ];
+
+        return response()->json($response);
+    }
+
+    $data = json_encode($api_data);
+
+    return response()->json($api_data);
+}
+
     
 
 
