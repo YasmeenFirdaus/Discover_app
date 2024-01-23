@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Api;
+use App\Models\AddApi;
 use App\Models\CategoryMaster;
 use App\Models\ApiData;
 use Illuminate\Http\Request;
@@ -16,45 +16,46 @@ use Illuminate\Support\Facades\DB;
 
 class ApiDataController extends Controller
 { 
-    // To view category 
+    // // To view category 
 
-    public function CategoryView(){
-        $api_category = DB::table('category_master')->get();
-        if(!$api_category){
-            $response =array(
-                "status"=> false,
-                "message" => "category not found"
-            );
-            return $response;
-        }
+    // public function CategoryView(){
+    //     $api_category = DB::table('category_master')->get();
+    //     if(!$api_category){
+    //         $response =array(
+    //             "status"=> false,
+    //             "message" => "category not found"
+    //         );
+    //         return $response;
+    //     }
 
-        $data =json_encode($api_category);
-        return response()-> json($api_category);
-    }
+    //     $data =json_encode($api_category);
+    //     return response()-> json($api_category);
+    // }
 
 
-// to view data through api 
-    public function DataView($category){
-        $api_data = DB::table('api_data')->where('category_id',$category)->get();
-
-        if(!$api_data){
-            $response = array(
+    public function DataView($category)
+    {
+        $api_data = DB::table('api_data')->where('category', $category)->get();
+    
+        if ($api_data->isEmpty()) {
+            $response = [
                 "status" => false,
                 "message" => "data not found"
-            );
-
-            return $response;
+            ];
+    
+            return response()->json($response);
         }
-
+    
         $data = json_encode($api_data);
-        // dd($sub);
+    
         return response()->json($api_data);
     }
+    
 
 
     public function fetchDataAndDisplay()
     {
-        $apis = Api::all();
+        $apis = AddApi::all();
         $apiDataList = [];
 
         foreach ($apis as $api) {
@@ -114,19 +115,22 @@ class ApiDataController extends Controller
     
     private function storeData($api, $data, &$apiDataList)
     {
-         // Customize this method to handle and store data for each type of response
-         $category = $data['category'] ?? 'Uncategorized';
+        //  // Customize this method to handle and store data for each type of response
+        //  $category = $data['category'] ?? 'Uncategorized';
 
-         // Get or create the CategoryMaster based on the category name
-         $categoryMaster = CategoryMaster::firstOrCreate(['category_name' => $category]);
- 
+        //  // Get or create the CategoryMaster based on the category name
+        //  $categoryMaster = CategoryMaster::firstOrCreate(['category_name' => $category]);
+        // foreach ($data as $articleData) {
+        //     $post_id = $articleData['post_id'] ?? '';
+        //     $uniquePostId = Str::slug("{$api->id}-{$post_id}");
+            
         // Customize this method to handle and store data for each type of response
         $apiData = new ApiData([
             'api_id' => $api->id,
-            'category_id' => $categoryMaster->id,
+            'category' => $api->category,
             'title' => $data['title'] ?? '(No Title)',
             'description' => $data['description'] ?? '(No Description Available)',
-            'image_url' => $data['image_url'] ?? 'https://example.com/default_image.png',
+            'image_url' => $data['image_url'] ??'',
             'source_name' => $data['source_name'] ?? 'Unknown Source',
             'source_url' => $data['source_url'] ?? '',
             'url' => $data['url'] ?? '',
@@ -136,26 +140,28 @@ class ApiDataController extends Controller
                 : date('Y-m-d H:i:s'), // Default to current date and time if "published_at" is missing
             'author_name' => $data['author_name'] ?? 'Anonymous',
             'author_url' => $data['author_url'] ?? '',
-            'category' => $data['category'] ?? 'Uncategorized',
+            // 'category' => $data['category'] ?? 'Uncategorized',
             'tags' => isset($data['tags'])
                 ? (is_array($data['tags']) ? json_encode($data['tags']) : $data['tags'])
                 : null, // Set to null or a default value if "tags" is missing
             'metadata' => isset($data['metadata'])
                 ? (is_array($data['metadata']) ? json_encode($data['metadata']) : $data['metadata'])
-                : null, // Set to null or a default value if "metadata" is missing
-            // ... other fields
+                : null, 
+        //         'post_id' => $post_id, // Adjust based on your API response structure
+        // 'api_response' => json_encode($data['api_response'] ?? []),
         ]);
     
         $apiData->save();
     
         // Add the API data to the list
         $apiDataList[] = $apiData;
-    }
+    
+}
 
     
     private function markApiAsFetched($apiId)
     {
-        DB::table('apis')->where('id', $apiId)->update(['fetched' => true]);
+        DB::table('add_api')->where('id', $apiId)->update(['fetched' => true]);
     }
 
     private function handleJsonResponse($jsonResponse)
@@ -185,6 +191,8 @@ class ApiDataController extends Controller
                         ? (is_array($article['tags']) ? json_encode($article['tags']) : $article['tags'])
                         : null,
                     'metadata' => $article['metadata'] ?? [],
+                //     'post_id' => $article['post_id'] ?? '', // Adjust based on your API response structure
+                // 'api_response' => json_encode($article['api_response'] ?? []),
                 ];
             }
         }
@@ -203,6 +211,8 @@ class ApiDataController extends Controller
                 'category' => $jsonResponse['category'] ?? null,
                 'tags' => $jsonResponse['tags'] ?? [],
                 'metadata' => $jsonResponse['metadata'] ?? [],
+            //     'post_id' => $jsonResponse['post_id'] ?? '', // Adjust based on your API response structure
+            // 'api_response' => json_encode($jsonResponse['api_response'] ?? []),
             ];
         }
 
@@ -236,6 +246,8 @@ class ApiDataController extends Controller
                         'category' => isset($item->category) ? (string)$item->category : '',
                         'tags' => $this->parseXmlTags($item),
                         'metadata' => $this->parseXmlMetadata($item),
+                        // 'post_id' => $item['post_id'] ?? '', // Adjust based on your XML structure
+                        // 'api_response' => json_encode($item['api_response'] ?? []),    
                         // ... other fields
                     ];
     

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ApiController;
+use App\Http\Controllers\AddApiController;
 use App\Http\Controllers\ApiDataController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VahiniController;
@@ -35,10 +35,10 @@ Route::get('/', function () {
         Route::post('/login/owner', [AdminController::class, 'Login'])->name('admin.logindata');
 
         // To display add API form page (both web and API)
-        Route::get('/adminApi', [ApiController::class, 'create'])->name('admin.addapi');
+        Route::get('/adminApi', [AddApiController::class, 'create'])->name('admin.addapi');
 
         // To submit the data to the database (both web and API)
-        Route::post('/AddNewApi', [ApiController::class, 'Newapi'])->name('admin.AddNewApi');
+        Route::post('/AddNewApi', [AddApiController::class, 'Newapi'])->name('admin.AddNewApi');
 
         // // To show data in API Data Page (both web and API)
         // Route::get('/adminApiData', [ApiDataController::class, 'fetchDataAndDisplay'])->name('admin.apidata');

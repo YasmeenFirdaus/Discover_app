@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('api_data', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('api_id');
-            $table->foreign('api_id')->references('id')->on('apis');
-            $table->unsignedBigInteger('category_id')->nullable();
-            $table->foreign('category_id')->references('id')->on('category_master');
+            $table->foreign('api_id')->references('id')->on('add_api');
+            $table->string('category')->nullable();
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->string('image_url')->nullable();
@@ -27,9 +26,10 @@ return new class extends Migration
             $table->timestamp('published_at');
             $table->string('author_name', 100)->nullable();
             $table->string('author_url')->nullable();
-            $table->string('category');
             $table->json('tags')->nullable();
             $table->json('metadata')->nullable();
+            $table->string('post_id');
+            $table->json('api_response');
             $table->timestamps();
         });
     }

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ApiController;
+use App\Http\Controllers\AddApiController;
 use App\Http\Controllers\ApiDataController;
 
 // To show data in API Data Page 

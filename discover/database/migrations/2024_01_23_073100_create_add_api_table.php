@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('apis', function (Blueprint $table) {
+        Schema::create('add_api', function (Blueprint $table) {
             $table->id();
             $table->string('api_name');
             $table->string('api_url');
+            $table->string('category')->nullable();
             $table->boolean('fetched')->default(false);
             $table->string('created_by')->default('admin');
             $table->string('updated_by')->default('admin');

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Api;
+use App\Models\AddApi;
 use App\Models\CategoryMaster;
 use Illuminate\Support\Facades\DB; 
 use Illuminate\Http\Request;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 
-class ApiController extends Controller
+class AddApiController extends Controller
 {
     /**
      * Display the form to add API or Retrieve all API data.
@@ -25,14 +25,14 @@ class ApiController extends Controller
 
             // If it's an API request, retrieve and return all API data
             if ($request->header('Accept') && Str::contains($request->header('Accept'), 'json')) {
-                $apiData = Api::all();
+                $apiData = AddApi::all();
                 return response()->json(['data' => $apiData], JsonResponse::HTTP_OK);
             }
 
             // If it's a web request, display the form with dynamic categories
-            $categories = DB::table('apis')->distinct()->pluck('category')->toArray(); // Adjust to 'category'
-            $api = Api::all();
-            return view('admin.dashboard.add_api', compact('api', 'categories'));
+            $category = DB::table('add_api')->distinct()->pluck('category')->toArray(); // Adjust to 'category'
+            $api = AddApi::all();
+            return view('admin.dashboard.add_api', compact('api', 'category'));
         } catch (\Exception $e) {
             // Handle exceptions if any
             return response()->json(['error' => $e->getMessage()], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
@@ -57,11 +57,12 @@ class ApiController extends Controller
             ]);
 
             // Create an instance of the 'ApiData' model
-            $apiData = new Api();
+            $apiData = new AddApi();
 
             // Assign values to model properties
             $apiData->api_name = $validatedData['apiname'];
             $apiData->api_url = $validatedData['apiurl'];
+            $apiData->category = $validatedData['category'];
             $apiData->created_by = 'Admin';
             $apiData->updated_by = 'Admin';
 
@@ -69,13 +70,13 @@ class ApiController extends Controller
             $apiData->save();
 
             // Create an instance of the 'CategoryMaster' model
-            $category = new CategoryMaster(); // Adjust the model name
+            // $category = new CategoryMaster(); // Adjust the model name
 
             // Assign the 'category' value to the 'category_name' field
-            $category->category_name = $validatedData['category'];
+            // $category->category_name = $validatedData['category'];
 
             // Save the 'CategoryMaster' model to the database
-            $category->save();
+            // $category->save();
 
             // Return the appropriate response based on the request type
             if ($request->header('Accept') && Str::contains($request->header('Accept'), 'json')) {
