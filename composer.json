@@ -1,0 +1,9 @@
+{
+    "name": "pc/discover_app",
+    "autoload": {
+        "psr-4": {
+            "Pc\\DiscoverApp\\": "src/"
+        }
+    },
+    "require": {}
+}
